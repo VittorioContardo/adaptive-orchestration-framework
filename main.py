@@ -1,55 +1,53 @@
-from datetime import datetime
-
-from memory.configuration_store import (
-    ConfigurationStore
+from experiments.experiments_runner import (
+    ExperimentRunner
 )
 
-from controller.rollback_engine import (
-    RollbackEngine
+results = (
+    ExperimentRunner
+    .run_experiments(50)
 )
 
-
-# salvataggio configurazione precedente
-ConfigurationStore.save_configuration({
-
-    "configuration_name":
-        "default_prompt",
-
-    "version_id":
-        "v1",
-
-    "global_score":
-        0.8,
-
-    "timestamp":
-        str(datetime.now())
-})
-
-
-# score corrente peggiore
-current_score = 0.5
-
-
-print("\nCURRENT SCORE:\n")
-print(current_score)
-
-
-rollback_needed = (
-    RollbackEngine.should_rollback(
-        current_score
-    )
+successes = sum(
+    1 for r in results
+    if r["success"]
 )
 
-print("\nROLLBACK NEEDED:\n")
-print(rollback_needed)
+failures = len(results) - successes
 
+average_retry = (
+    sum(
+        r["retry_count"]
+        for r in results
+    ) / len(results)
+)
 
-if rollback_needed:
+average_score = (
+    sum(
+        r["global_score"]
+        for r in results
+    ) / len(results)
+)
 
-    previous = (
-        RollbackEngine.rollback()
-    )
+print("\nRESULTS\n")
 
-    print("\nROLLBACK CONFIGURATION:\n")
+print(
+    f"Runs: {len(results)}"
+)
 
-    print(previous)
+print(
+    f"Successes: {successes}"
+)
+
+print(
+    f"Failures: {failures}"
+)
+
+print(
+    f"Average Retry: "
+    f"{average_retry:.2f}"
+)
+
+print(
+    f"Average Score: "
+    f"{average_score:.2f}"
+)
