@@ -62,7 +62,6 @@ class ExperimentRunner:
     def simulate_error_propagation(num_runs=100):
 
         baseline_errors = 0
-
         adaptive_errors = 0
 
         for _ in range(num_runs):
@@ -90,4 +89,86 @@ class ExperimentRunner:
 
             "adaptive_errors":
                 adaptive_errors
+        }
+
+    @staticmethod
+    def simulate_retry_recovery(num_runs=100):
+
+        retry_attempts = 0
+        recovered_errors = 0
+        failed_after_retry = 0
+
+        for _ in range(num_runs):
+
+            error_occurs = (
+                random.random() > 0.40
+            )
+
+            if error_occurs:
+
+                retry_attempts += 1
+
+                recovered = (
+                    random.random() > 0.30
+                )
+
+                if recovered:
+
+                    recovered_errors += 1
+
+                else:
+
+                    failed_after_retry += 1
+
+        return {
+
+            "retry_attempts":
+                retry_attempts,
+
+            "recovered_errors":
+                recovered_errors,
+
+            "failed_after_retry":
+                failed_after_retry
+        }
+
+    @staticmethod
+    def simulate_rollback_effectiveness(num_runs=100):
+
+        degraded_configurations = 0
+
+        rollback_activated = 0
+
+        restored_configurations = 0
+
+        for _ in range(num_runs):
+
+            degraded = (
+                random.random() > 0.50
+            )
+
+            if degraded:
+
+                degraded_configurations += 1
+
+                rollback_activated += 1
+
+                restored = (
+                    random.random() > 0.20
+                )
+
+                if restored:
+
+                    restored_configurations += 1
+
+        return {
+
+            "degraded_configurations":
+                degraded_configurations,
+
+            "rollback_activated":
+                rollback_activated,
+
+            "restored_configurations":
+                restored_configurations
         }
